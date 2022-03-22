@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:contacts/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 void main() {
@@ -28,7 +29,7 @@ class DataFromAPI extends StatefulWidget {
 class _DataFromAPIState extends State<DataFromAPI> {
   Future getUserData() async {
     var response =
-        await http.get(Uri.https('jsonplaceholder.typicode.com', 'users'));
+        await http.get(Uri.parse('https://jsonplaceholder.typicode.com/users'));
     var jsonData = jsonDecode(response.body);
     List<User> users = [];
     for (var u in jsonData){
@@ -55,13 +56,15 @@ class _DataFromAPIState extends State<DataFromAPI> {
                     child: Text('Loading.....'),
                   ),
                 );
-              } else return ListView.builder(
+              } else {
+                return ListView.builder(
                   itemCount: snapshot.data.length,
-                  itemBuilder: (context, index){
+                  itemBuilder: (context, int index){
                 return ListTile(
-                  title: Text(snapshot.data[index].name),
+                  title: Text(snapshot.data?.name),
                 );
                   });
+              }
             },
           ),
         ),
@@ -70,7 +73,3 @@ class _DataFromAPIState extends State<DataFromAPI> {
   }
 }
 
-class User {
-  final String name;
-  User(this.name);
-}
