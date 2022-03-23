@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:contacts/models/home_details.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,6 +17,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      routes: {
+        'HomeDetails':(context) => const HomeDetails(),
+      },
       home: DataFromAPI(),
     );
   }
@@ -27,6 +32,7 @@ class DataFromAPI extends StatefulWidget {
 }
 
 class _DataFromAPIState extends State<DataFromAPI> {
+
   late Future<List<Post>> futurePost;
   Future<List<Post>> fetchPost() async {
     final response =
@@ -56,7 +62,7 @@ class _DataFromAPIState extends State<DataFromAPI> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Fetch Data Example'),
+          title: const Text('Contacts'),
         ),
         body: FutureBuilder<List<Post>>(
           future: futurePost,
@@ -66,40 +72,18 @@ class _DataFromAPIState extends State<DataFromAPI> {
                 itemCount: snapshot.data!.length,
                 itemBuilder: (_, index) =>
                     ListTile(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => HomeDetails()));
+                      },
                       leading: CircleAvatar(
                         backgroundColor: Colors.grey.withOpacity(0.8),
                       ),
                       title: Text(snapshot.data![index].name),
                       subtitle: Text(snapshot.data![index].email),
                     )
-                    /*Container(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    padding: EdgeInsets.all(20.0),
-                    decoration: BoxDecoration(
-                      color: Color(0xff97FFFF),
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "${snapshot.data![index].name}",
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Text("${snapshot.data![index].email}"),
-                      ],
-                    ),
-                  ),
-                ),*/
               );
             } else {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
           },
         ),
