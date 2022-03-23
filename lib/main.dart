@@ -18,9 +18,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      routes: {
-        'HomeDetails':(context) => const HomeDetails(),
-      },
       home: DataFromAPI(),
     );
   }
@@ -32,11 +29,11 @@ class DataFromAPI extends StatefulWidget {
 }
 
 class _DataFromAPIState extends State<DataFromAPI> {
+  late final Future<List<Post>> futurePost;
 
-  late Future<List<Post>> futurePost;
   Future<List<Post>> fetchPost() async {
     final response =
-    await http.get(Uri.parse('https://jsonplaceholder.typicode.com/users'));
+        await http.get(Uri.parse('https://jsonplaceholder.typicode.com/users'));
 
     if (response.statusCode == 200) {
       final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
@@ -69,19 +66,20 @@ class _DataFromAPIState extends State<DataFromAPI> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (_, index) =>
-                    ListTile(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => HomeDetails()));
-                      },
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.grey.withOpacity(0.8),
-                      ),
-                      title: Text(snapshot.data![index].name),
-                      subtitle: Text(snapshot.data![index].email),
-                    )
-              );
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (_, index) => ListTile(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomeDetails(post: snapshot.data![index],)));
+                        },
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.grey.withOpacity(0.8),
+                        ),
+                        title: Text(snapshot.data![index].name),
+                        subtitle: Text(snapshot.data![index].email),
+                      ));
             } else {
               return const Center(child: CircularProgressIndicator());
             }
